@@ -1,31 +1,49 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.db.mongodb import init_db
-# Import the routers we are about to create/verify
-from app.routers import patient_router, opd_router, doctor_router, inventory_router
 
-app = FastAPI(title="MedERP API")
+# Import your actual routers
+from app.routers import (
+    patient_router,
+    opd_router,
+    doctor_router,
+    inventory_router,
+    lab_router
+)
 
-# Allow Frontend (React) to talk to Backend
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Connect to DB and Initialize Beanie Models
+    await init_db()
+    print("✅ Database Connected & Beanie Initialized")
+    yield
+    # Shutdown logic (if any)
+    print("⛔ Database Disconnected")
+
+app = FastAPI(lifespan=lifespan, title="MedERP API", version="2.5")
+
+# --- CORS Config (Critical for React) ---
+origins = [
+    "http://localhost:5173",  # Vite default
+    "http://127.0.0.1:5173",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # In production, replace with ["http://localhost:3000"]
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-@app.on_event("startup")
-async def start_db():
-    await init_db()
-    print("✅ Database Connected")
-
-# Register the modules
+# --- Register Routers ---
 app.include_router(patient_router.router)
 app.include_router(opd_router.router)
 app.include_router(doctor_router.router)
 app.include_router(inventory_router.router)
+app.include_router(lab_router.router)
 
 @app.get("/")
-def home():
-    return {"message": "MedERP System is Live"}
+async def root():
+    return {"message": "MedERP Enterprise API is Live"}

@@ -7,6 +7,7 @@ import DashboardHome from "./pages/DashboardHome";
 import RegisterPatient from "./pages/RegisterPatient";
 import BookAppointment from "./pages/BookAppointment";
 import Login from "./pages/Login";
+import OpdQueue from "./pages/OpdQueue";
 
 // Placeholder for Login
 // const Login = () => (
@@ -40,7 +41,7 @@ function App() {
         <Route path="/booking" element={<Layout><BookAppointment /></Layout>} />
         
         {/* Sidebar Links mapped to Placeholders */}
-        <Route path="/queue" element={<Layout><Placeholder title="Queue Management" /></Layout>} />
+        <Route path="/queue" element={<Layout><OpdQueue /></Layout>} />
         <Route path="/billing" element={<Layout><Placeholder title="Billing & Invoicing" /></Layout>} />
         <Route path="/inventory" element={<Layout><Placeholder title="Pharmacy Inventory" /></Layout>} />
         <Route path="/lab" element={<Layout><Placeholder title="Laboratory (LIS)" /></Layout>} />
