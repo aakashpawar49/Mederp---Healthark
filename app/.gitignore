@@ -1,0 +1,55 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+venv/
+env/
+.env
+.venv
+env.bak/
+venv.bak/
+
+# Environment Variables (CRITICAL)
+.env
+.env.local
+.secrets
+
+# Distribution / Packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Database (If using local SQLite)
+*.sqlite3
+*.db
+
+# Logs
+*.log
+logs/
+
+# Testing
+.tox/
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Jupyter Notebooks (if doing data analysis)
+.ipynb_checkpoints
+
+# IDEs
+.vscode/
+.idea/
