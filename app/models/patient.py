@@ -1,30 +1,46 @@
 from beanie import Document
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import Field
+from datetime import date, datetime
 from typing import Optional
-from datetime import datetime
 import uuid
 
-class EmergencyContact(BaseModel):
-    name: str
-    phone: str
-    relation: str
-
 class Patient(Document):
-    # Beanie uses 'Document' to map to MongoDB collections automatically
-    uhid: str = Field(default_factory=lambda: f"UHID-{uuid.uuid4().hex[:8].upper()}")
+    # System Fields
+    uhid: str = Field(default_factory=lambda: f"UHID-{uuid.uuid4().hex[:6].upper()}")
+    registered_at: datetime = Field(default_factory=datetime.now)
+
+    # Demographics
+    prefix: Optional[str] = None
     first_name: str
+    middle_name: Optional[str] = None
     last_name: str
-    dob: str  # keeping string for simplicity, ideally datetime
+    name: str = "" # Default to empty, calculated in router
+    
+    dob: Optional[str] = None 
+    # CHANGE: Make age Optional so validation doesn't fail on empty input
+    age: Optional[str] = None 
     gender: str
-    phone: str
-    email: Optional[EmailStr] = None
-    address: str
-    emergency_contact: EmergencyContact
-    created_at: datetime = Field(default_factory=datetime.now)
+    blood_group: Optional[str] = None
+    marital_status: Optional[str] = None
+
+    # Contact & Address
+    phone: str = Field(..., unique=True)
+    email: Optional[str] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    zip: Optional[str] = None
+    national_id_type: Optional[str] = None
+    national_id_no: Optional[str] = None
+
+    # Emergency & Insurance
+    emergency_name: Optional[str] = None
+    emergency_phone: Optional[str] = None
+    emergency_relation: Optional[str] = None
+    
+    insurance_provider: Optional[str] = None
+    policy_number: Optional[str] = None
+    coverage_validity: Optional[str] = None
 
     class Settings:
-        name = "patients" # Collection name in MongoDB
-        indexes = [
-            "uhid", # Index for fast search
-            "phone" # Index for checking duplicates
-        ]
+        name = "patients"

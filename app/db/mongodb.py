@@ -8,6 +8,7 @@ from app.models.doctor import DoctorProfile, DailySchedule
 from app.models.opd import OPDQueue
 from app.models.inventory import InventoryItem
 from app.models.lab import LabReport, LabTestCatalog
+from app.models.consultation import Consultation
 
 async def init_db():
     client = AsyncIOMotorClient(settings.MONGODB_URL)
@@ -22,6 +23,7 @@ async def init_db():
             OPDQueue,
             InventoryItem,
             LabReport,
-            LabTestCatalog
+            LabTestCatalog,
+            Consultation
         ]
     )

@@ -2,6 +2,8 @@ from fastapi import APIRouter, HTTPException
 from app.models.doctor import DoctorProfile, DailySchedule
 from app.models.patient import Patient
 from datetime import datetime, timedelta
+from app.models.consultation import Consultation
+from app.models.opd import OPDQueue, VisitStatus
 
 # --- MISSING IMPORTS ADDED HERE ---
 from pydantic import BaseModel 
@@ -112,3 +114,18 @@ async def book_slot(request: BookingRequest):
         raise HTTPException(status_code=400, detail="Slot already booked or invalid")
 
     return {"message": f"Appointment confirmed for {request.time_slot}"}
+
+@router.post("/consultation/submit")
+async def submit_consultation(consult: Consultation):
+    # 1. Save the Consultation Record
+    await consult.create()
+    
+    # 2. Mark the Patient as "COMPLETED" in the OPD Queue
+    # We find the active visit for this patient & doctor
+    await OPDQueue.find_one(
+        OPDQueue.patient.id == consult.patient_id, # You might need to adjust based on how you store IDs
+        OPDQueue.doctor_id == consult.doctor_id,
+        OPDQueue.status == VisitStatus.IN_CONSULT
+    ).update({"$set": {"status": VisitStatus.COMPLETED}})
+    
+    return {"message": "Consultation Saved Successfully", "id": str(consult.id)}

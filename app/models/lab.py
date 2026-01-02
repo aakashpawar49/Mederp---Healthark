@@ -1,46 +1,33 @@
 from beanie import Document, Link
-from pydantic import BaseModel, Field
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Optional
 from datetime import datetime
 from app.models.patient import Patient
-
-# 1. The Menu (Catalog)
-class ReferenceRange(BaseModel):
-    gender: str  # "M", "F", "CHILD"
-    min_val: float
-    max_val: float
-    unit: str    # "mg/dL"
+from pydantic import BaseModel, Field
 
 class LabTestCatalog(Document):
-    code: str              # "LIPID-01"
-    name: str              # "Lipid Profile"
+    code: str # "LIPID_PROFILE"
+    name: str
     price: float
-    parameters: List[str]  # ["Cholesterol", "HDL", "LDL"] - helps UI know what to ask
-    
+    reference_ranges: str 
+
     class Settings:
         name = "lab_catalog"
 
-# 2. The Result (Report)
 class ReportVersion(BaseModel):
     version_number: int
-    data: Dict[str, Any]   # The actual results e.g. {"Cholesterol": 200}
-    edited_by: str         # User ID of technician
+    data: Dict
+    edited_by: str
     timestamp: datetime
 
 class LabReport(Document):
     patient: Link[Patient]
-    doctor_name: str       # Name of prescribing doctor
-    test_code: str         # Link to Catalog
-    test_name: str         # Stored for historical accuracy
-    
-    # Current active data
-    status: str            # "PENDING", "FINALIZED"
-    current_data: Dict[str, Any] = {} 
-    
-    # Version Control (Audit Trail)
+    doctor_name: str
+    test_code: str
+    test_name: str
+    status: str = "PENDING" # PENDING, FINALIZED
+    current_data: Dict = {}
     version: int = 1
-    history: List[ReportVersion] = []
-    
+    history: List[ReportVersion] = [] # For auditing changes
     created_at: datetime = Field(default_factory=datetime.now)
 
     class Settings:

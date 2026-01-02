@@ -8,6 +8,9 @@ import RegisterPatient from "./pages/RegisterPatient";
 import BookAppointment from "./pages/BookAppointment";
 import Login from "./pages/Login";
 import OpdQueue from "./pages/OpdQueue";
+import Inventory from "./pages/Inventory";
+import DoctorDesk from "./pages/DoctorDesk";
+import Registration from "./pages/Registration";
 
 // Placeholder for Login
 // const Login = () => (
@@ -43,10 +46,12 @@ function App() {
         {/* Sidebar Links mapped to Placeholders */}
         <Route path="/queue" element={<Layout><OpdQueue /></Layout>} />
         <Route path="/billing" element={<Layout><Placeholder title="Billing & Invoicing" /></Layout>} />
-        <Route path="/inventory" element={<Layout><Placeholder title="Pharmacy Inventory" /></Layout>} />
+        <Route path="/inventory" element={<Layout><Inventory /></Layout>} />
         <Route path="/lab" element={<Layout><Placeholder title="Laboratory (LIS)" /></Layout>} />
         <Route path="/radiology" element={<Layout><Placeholder title="Radiology (RIS)" /></Layout>} />
         <Route path="/settings" element={<Layout><Placeholder title="System Settings" /></Layout>} />
+        <Route path="/doctor-desk" element={<Layout><DoctorDesk /></Layout>} />
+        {/* <Route path="/register" element={<Layout><RegisterPatient /></Layout>} /> */}
 
       </Routes>
     </BrowserRouter>

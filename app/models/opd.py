@@ -1,21 +1,21 @@
 from beanie import Document, Link
 from pydantic import Field
+from beanie import Document, Link
 from datetime import datetime
-from app.models.patient import Patient
 from enum import Enum
+from app.models.patient import Patient
 
 class VisitStatus(str, Enum):
     WAITING = "WAITING"
-    IN_CONSULTATION = "IN_CONSULTATION"
+    IN_CONSULT = "IN_CONSULT"
     COMPLETED = "COMPLETED"
-    CANCELLED = "CANCELLED"
+    MISSED = "MISSED"
 
 class OPDQueue(Document):
-    patient: Link[Patient] # Reference to the Patient Document
-    doctor_id: str         # ID of the doctor (User ID)
-    token_number: int      # Simple 1, 2, 3 sequence for the day
+    token_number: int
+    patient: Link[Patient] # Reference to Patient Doc
+    doctor_id: str
     visit_reason: str
-    vitals: dict = {}      # BP, Temp, Weight (captured by nurse)
     status: VisitStatus = VisitStatus.WAITING
     check_in_time: datetime = Field(default_factory=datetime.now)
 

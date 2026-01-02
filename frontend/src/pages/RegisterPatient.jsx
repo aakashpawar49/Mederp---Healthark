@@ -1,10 +1,9 @@
 import { useState } from "react";
 import api from "../api";
 import PageTransition from "../components/PageTransition";
-import { Save, User, Shield, Phone, FileText } from "lucide-react";
+import { Save, User, Shield, Phone } from "lucide-react";
 
 export default function RegisterPatient() {
-  const [activeTab, setActiveTab] = useState("basic");
   const [formData, setFormData] = useState({
     prefix: "Mr.", first_name: "", middle_name: "", last_name: "", 
     dob: "", age: "", gender: "M", blood_group: "", marital_status: "Single",
@@ -15,21 +14,39 @@ export default function RegisterPatient() {
   });
   const [uhid, setUhid] = useState(null);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await api.post("/patients/", formData);
-      setUhid(res.data.uhid);
-      window.scrollTo(0, 0);
-    } catch (error) {
-      alert("Registration Error: " + (error.response?.data?.detail || "Check connection"));
-    }
-  };
-
+  // --- MISSING FUNCTION ADDED HERE ---
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleSubmit = async (e) => {
+      e.preventDefault();
+      try {
+        const res = await api.post("/patients/", formData);
+        setUhid(res.data.uhid);
+        // Scroll to top to see the green success message
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (error) {
+        console.error("Registration Error:", error);
+        
+        // IMPROVED ERROR HANDLING
+        let errorMsg = "Registration Failed";
+        if (error.response) {
+          // If backend sends a specific detail message (like duplicate phone)
+          if (typeof error.response.data.detail === "string") {
+              errorMsg = error.response.data.detail;
+          } 
+          // If backend sends Pydantic validation errors (array of objects)
+          else if (Array.isArray(error.response.data.detail)) {
+              // Extract the first error message from the list
+              errorMsg = `Validation Error: ${error.response.data.detail[0].msg} (Field: ${error.response.data.detail[0].loc.join(".")})`;
+          }
+        }
+        
+        alert(errorMsg);
+      }
+    };
+    
   // Helper for Section Headers
   const SectionTitle = ({ title, icon }) => (
     <div className="flex items-center gap-2 text-[#0F2146] border-b border-gray-200 pb-2 mb-4 mt-6">
@@ -180,7 +197,7 @@ export default function RegisterPatient() {
           </div>
         </form>
 
-        {/* CSS Utility for Cleaner Inputs (Add to style tag or global css if desired) */}
+        {/* CSS Utility for Cleaner Inputs */}
         <style>{`
           .form-input {
             width: 100%;
